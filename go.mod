@@ -1,4 +1,4 @@
-module gojini.dev/signals
+module gojini.dev/signal
 
 go 1.17
 

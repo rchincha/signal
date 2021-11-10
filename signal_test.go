@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	signal "gojini.dev/signals"
+	"gojini.dev/signal"
 )
 
 type sigH struct {

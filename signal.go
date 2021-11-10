@@ -7,15 +7,19 @@ import (
 	"sync"
 )
 
-// Handler is a function that handles the signal.
+// Handler is a function that handles the signal. Handler can be registered
+// with a signal router. It is invoked whenever as signal is fired.
 type Handler func(os.Signal)
 
-// Router routes signals to registered handler.
+// Router routes signals to registered handler. Router keeps track of signals
+// that needs to be ignored or handled. If a handler is set for a signal it will
+// invoke the handler when a signal is received.
 type Router interface {
 	// Handle registers a signal handler.
 	Handle(sig os.Signal, h Handler)
 
-	// Reset resets a signal handler.
+	// Reset resets a signal handler. This signal will not be forwarded once
+	// reset.
 	Reset(sig os.Signal)
 
 	// Ignore ignores a signal.
@@ -30,10 +34,11 @@ type Router interface {
 	// Fire a signal.
 	Fire(sig os.Signal)
 
-	// Start the router
+	// Start the signal router. This method is a block until the router is
+	// stopped. It is usual to call this method in a separate go routine.
 	Start() error
 
-	// Stop the router
+	// Stop the router. Stops the router and releases the resources.
 	Stop(err error)
 }
 
@@ -124,6 +129,7 @@ func (s *router) Start() error {
 
 // Stop stops the signal router.
 func (s *router) Stop(err error) {
+	close(s.signalCh)
 	s.cancelFunc()
 }
 
